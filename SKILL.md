@@ -11,7 +11,7 @@ Transform YouTube videos from your favorite channels into well-written magazine-
 
 1. Fetches latest videos from YouTube channels (filtering out Shorts)
 2. Extracts transcripts from those videos
-3. Transforms transcripts into polished articles using Claude
+3. Transforms transcripts into polished articles using ModelScope (GLM, Anthropic-compatible API)
 4. Packages articles into an EPUB ebook for reading on any device
 
 ## Quick Start
@@ -28,7 +28,7 @@ I'll guide you through:
 
 - Python 3.8+
 - YouTube Data API key (free from Google Cloud Console)
-- Anthropic API key (for Claude)
+- ModelScope API token (for inference; default model `ZhipuAI/GLM-4.7-Flash` via Anthropic-compatible client)
 
 ## Commands
 
@@ -109,7 +109,7 @@ for video in videos:
 ### 5. Transcript Accuracy (Names, Terms)
 **Problem**: Auto-transcripts misspell names and technical terms.
 
-**Solution**: Include video title and description in Claude's context—these usually have correct spellings.
+**Solution**: Include video title and description in the LLM prompt—these usually have correct spellings.
 
 ### 6. Cloud Automation Blocked
 **Problem**: GitHub Actions and cloud servers are blocked by YouTube for transcript fetching.
@@ -158,7 +158,7 @@ GMAIL_APP_PASSWORD=your-app-password
 ```
 ┌─────────────┐    ┌──────────────┐    ┌───────────────┐    ┌────────────┐
 │ Fetch Videos│───▶│Get Transcripts│───▶│Write Articles │───▶│Create EPUB │
-│ (YouTube API)│    │(Transcript API)│    │  (Claude AI)  │    │ (ebooklib) │
+│ (YouTube API)│    │(Transcript API)│    │ (ModelScope)  │    │ (ebooklib) │
 └─────────────┘    └──────────────┘    └───────────────┘    └────────────┘
 ```
 
