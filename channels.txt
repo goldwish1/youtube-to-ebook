@@ -1,0 +1,11 @@
+# YouTube 频道 handle，每行一个；以 # 开头的行为注释
+# 示例：youtube.com/@MrBeast → 填写 @MrBeast
+@LatentSpacePod
+@ycombinator
+@a16z
+@RedpointAI
+@EveryInc
+@DataDrivenNYC
+@NoPriorsPodcast
+@DwarkeshPatel
+@GregIsenberg

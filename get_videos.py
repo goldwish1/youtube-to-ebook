@@ -13,21 +13,31 @@ from dotenv import load_dotenv
 load_dotenv()
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 
-# ========================================
-# YOUR FAVORITE CHANNELS GO HERE
-# Use the @ handle from the channel's YouTube page (most reliable)
-# Example: youtube.com/@MrBeast → use "@MrBeast"
-# ========================================
-CHANNELS = [
-    "@LatentSpacePod",
-    "@ycombinator",
-    "@a16z",
-    "@RedpointAI",
-    "@EveryInc",
-    "@DataDrivenNYC",
-    "@NoPriorsPodcast",
-    "@DwarkeshPatel",
-]
+CHANNELS_FILE = os.path.join(os.path.dirname(__file__), "channels.txt")
+
+
+def load_channels(path=None):
+    """
+    Load channel handles from channels.txt (one per line).
+    Empty lines and lines starting with # are ignored.
+    Use the @ handle from the channel's YouTube page (most reliable).
+    """
+    file_path = path or CHANNELS_FILE
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError(
+            f"Channel list not found: {file_path}\n"
+            "Create channels.txt next to get_videos.py (see README)."
+        )
+
+    channels = []
+    with open(file_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            channels.append(line)
+
+    return channels
 
 
 def get_channel_info(youtube, channel_handle):
@@ -113,6 +123,16 @@ def main():
     """
     Main function - this runs when you execute the script.
     """
+    try:
+        channel_list = load_channels()
+    except FileNotFoundError as e:
+        print(str(e))
+        return []
+
+    if not channel_list:
+        print(f"No channels listed in {CHANNELS_FILE} (add one @handle per line).")
+        return []
+
     # Create a connection to YouTube
     youtube = build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
 
@@ -121,7 +141,7 @@ def main():
 
     videos = []
 
-    for channel_handle in CHANNELS:
+    for channel_handle in channel_list:
         print(f"Looking up: {channel_handle}")
 
         # Step 1: Get channel info (including uploads playlist)

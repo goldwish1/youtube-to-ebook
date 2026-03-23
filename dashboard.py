@@ -13,7 +13,7 @@ from pathlib import Path
 
 # Paths
 PROJECT_DIR = Path(__file__).parent
-CHANNELS_FILE = PROJECT_DIR / "get_videos.py"
+CHANNELS_FILE = PROJECT_DIR / "channels.txt"
 PROMPT_FILE = PROJECT_DIR / "write_articles.py"
 TRACKER_FILE = PROJECT_DIR / "processed_videos.json"
 NEWSLETTERS_DIR = PROJECT_DIR / "newsletters"
@@ -420,38 +420,34 @@ st.markdown("""
 # ============================================
 
 def get_channels():
-    """Extract channel handles from the Python file."""
-    with open(CHANNELS_FILE) as f:
-        content = f.read()
-
-    match = re.search(r'CHANNELS\s*=\s*\[(.*?)\]', content, re.DOTALL)
-    if not match:
+    """Load channel handles from channels.txt (one per line, # for comments)."""
+    if not CHANNELS_FILE.is_file():
         return []
 
-    channels_block = match.group(1)
-    handles = re.findall(r'["\'](@[\w]+)["\']', channels_block)
+    handles = []
+    with open(CHANNELS_FILE, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            handles.append(line)
     return handles
 
 
 def save_channels(channels):
-    """Save channels back to the Python file."""
-    with open(CHANNELS_FILE) as f:
-        content = f.read()
-
-    channels_str = "CHANNELS = [\n"
+    """Write channels to channels.txt."""
+    lines = [
+        "# YouTube channel handles, one per line. Lines starting with # are ignored.",
+        "",
+    ]
     for ch in channels:
-        channels_str += f'    "{ch}",\n'
-    channels_str += "]"
+        ch = (ch or "").strip()
+        if ch:
+            lines.append(ch)
+    lines.append("")
 
-    content = re.sub(
-        r'CHANNELS\s*=\s*\[.*?\]',
-        channels_str,
-        content,
-        flags=re.DOTALL
-    )
-
-    with open(CHANNELS_FILE, "w") as f:
-        f.write(content)
+    with open(CHANNELS_FILE, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
 
 
 def extract_handle_from_url(url_or_handle):
